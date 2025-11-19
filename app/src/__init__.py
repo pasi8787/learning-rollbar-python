@@ -1,0 +1,1 @@
+"""Rollbar notification application package."""

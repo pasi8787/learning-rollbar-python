@@ -1,0 +1,32 @@
+{
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit",
+      "source.unusedImports": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true
+  },
+  "evenBetterToml.schema.enabled": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "pyproject.toml": "poetry.lock",
+    "settings.yaml": "settings.*.yaml,.env"
+  },
+  "files.exclude": {
+    // Python
+    "**/__pycache__": true,
+    "**/.venv": true,
+    // MyPy
+    "**/.mypy_cache": true,
+    "**/.dmypy.json": true,
+    // Ruff
+    "**/.ruff_cache": true
+  },
+  "mypy-type-checker.preferDaemon": true,
+  "mypy-type-checker.cwd": "${workspaceFolder}/app",
+  "python.defaultInterpreterPath": ".\\app\\.venv\\Scripts\\python.exe",
+  "python.analysis.autoImportCompletions": true,
+  "ruff.trace.server": "verbose"
+}

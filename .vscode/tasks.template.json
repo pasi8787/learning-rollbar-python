@@ -1,0 +1,72 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run application",
+            "type": "shell",
+            "command": "poetry",
+            "args": [
+                "run",
+                "python",
+                "-m",
+                "src.main"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/app"
+            }
+        },
+        {
+            "label": "Check types",
+            "type": "shell",
+            "command": "poetry",
+            "args": [
+                "run",
+                "dmypy",
+                "run",
+                "--",
+                "src"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/app"
+            }
+        },
+        {
+            "label": "Format and Lint code",
+            "dependsOn": [
+                "Format code",
+                "Lint and fix code"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "Format code",
+            "type": "shell",
+            "command": "poetry",
+            "args": [
+                "run",
+                "ruff",
+                "format",
+                "src"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/app"
+            }
+        },
+        {
+            "label": "Lint and fix code",
+            "type": "shell",
+            "command": "poetry",
+            "args": [
+                "run",
+                "ruff",
+                "check",
+                "--fix",
+                "src"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/app"
+            }
+        }
+    ]
+}
