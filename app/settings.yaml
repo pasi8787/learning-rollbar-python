@@ -1,0 +1,4 @@
+rollbar:
+  access_token:
+  # [OPTIONAL] code_version will use git command to get latest commit hash if not specified
+  # code_version:

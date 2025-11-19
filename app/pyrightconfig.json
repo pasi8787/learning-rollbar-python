@@ -1,0 +1,12 @@
+{
+  "include": ["app", "tests"],
+  "exclude": ["**/__pycache__", "**/.pytest_cache", "**/.mypy_cache", "**/htmlcov"],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "pythonVersion": "3.13",
+      "pythonPlatform": "Linux"
+    }
+  ],
+  "typeCheckingMode": "off"
+}
