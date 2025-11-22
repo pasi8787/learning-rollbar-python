@@ -4,13 +4,16 @@ This guide shows you how to adapt the Rollbar integration for your own applicati
 
 ## Overview
 
-The tutorial code is designed to be easily customized for your specific needs. The main customization points are:
+The demo application is designed to be easily customized for your specific needs. The main customization points are:
 
 1. **Person/User tracking** - Replace demo user data with real authentication
 2. **Custom metadata** - Add application-specific context
-3. **Severity filtering** - Adjust which errors are sent to Rollbar
+3. **Severity filtering** - Add filtering logic to control what gets sent
 4. **Request/response data** - Add HTTP context for web applications
 5. **Framework integration** - Integrate with Flask, FastAPI, Django, etc.
+6. **Scenarios** - Add new demo scenarios or adapt for production use
+
+**Note:** The demo's payload handler (in [src/rollbar.py](../app/src/rollbar.py)) is intentionally simple - it sends all events to Rollbar without filtering. Individual scenarios control what they send. In production, you'll want to add your own filtering and enrichment logic.
 
 ## Customizing User Tracking
 
@@ -69,6 +72,7 @@ def _get_person() -> dict[str, Any]:
 ```
 
 This helps you:
+
 - Filter errors by tenant
 - Identify tenant-specific bugs
 - Track which customers are affected
@@ -184,19 +188,28 @@ def _get_database_context() -> dict[str, Any]:
     }
 ```
 
-## Adjusting Severity Filtering
+## Adding Severity Filtering
 
-### Customize Which Errors to Send
+### Control Which Errors to Send
 
-The demo filters out non-error messages:
+The demo doesn't filter by severity - it sends all events to Rollbar. In production, you may want to filter:
 
 ```python
-# Demo code - only sends errors
-if payload["data"]["level"] != "error":
-    return False
+def _payload_handler(payload: dict, **_kw: object) -> dict | bool:
+    """Enrich and optionally filter Rollbar payloads."""
+    level = payload["data"]["level"]
+
+    # Filter out debug and info in production
+    if level in ["debug", "info"]:
+        return False  # Don't send to Rollbar
+
+    # Add your enrichment logic here
+    payload["data"]["framework"] = "my_framework"
+
+    return payload
 ```
 
-Adjust based on your needs:
+Common filtering strategies:
 
 ```python
 # Send errors and critical only
@@ -575,11 +588,58 @@ except Exception:
 ```
 
 Check your Rollbar dashboard to verify:
+
 - ✅ Person data is populated correctly
 - ✅ Custom metadata appears in the Custom section
 - ✅ Request context is included (for web apps)
 - ✅ Framework identifier is set
 - ✅ All expected fields are present
+
+## Extending the Demo Scenarios
+
+The demo includes 8 scenarios demonstrating different Rollbar features. You can add your own scenarios to test specific use cases.
+
+See the [Scenarios Guide](scenarios-guide.md#creating-your-own-scenarios) for detailed instructions on creating custom scenarios.
+
+**Quick example:**
+
+```python
+# app/src/scenarios/my_scenario.py
+from ..utils import wait_for_user
+from .base import BaseScenario
+import rollbar
+
+class MyProductionScenario(BaseScenario):
+    @property
+    def name(self) -> str:
+        return "Production Simulation"
+
+    @property
+    def description(self) -> str:
+        return "Test production-like error reporting"
+
+    def run(self) -> None:
+        print("\n>> Testing production error reporting...")
+
+        rollbar.report_message(
+            "Simulated production error",
+            level="error",
+            extra_data={"environment": "production_test"}
+        )
+
+        wait_for_user()
+```
+
+Then register it in `app/src/scenarios/__init__.py`:
+
+```python
+from .my_scenario import MyProductionScenario
+
+ALL_SCENARIOS = [
+    # ... existing scenarios ...
+    MyProductionScenario(),
+]
+```
 
 ## Best Practices
 

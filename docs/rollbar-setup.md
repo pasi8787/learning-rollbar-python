@@ -16,6 +16,7 @@ Rollbar is a real-time error monitoring and tracking service that helps you iden
 4. Verify your email if required
 
 **Free tier:** Rollbar offers a free tier that's perfect for learning and small projects. You get:
+
 - 5,000 events per month
 - 30-day data retention
 - Unlimited projects
@@ -47,16 +48,19 @@ Access tokens authenticate your application with Rollbar. Different token types 
 Rollbar provides different tokens for different use cases:
 
 - **post_server_item** - For server-side applications (recommended for this tutorial)
+
   - Can post errors from backend applications
   - Cannot read data from Rollbar
   - Most secure for production backends
 
 - **post_client_item** - For client-side applications (also works for this tutorial)
+
   - Can post errors from client applications
   - Safe to expose in frontend code
   - Cannot read sensitive data
 
 - **read** - Read-only access (not needed for this tutorial)
+
   - Query Rollbar data via API
   - Cannot post new errors
 
@@ -71,6 +75,7 @@ Rollbar provides different tokens for different use cases:
 3. Save this token - you'll need it for configuration
 
 **Example token format:**
+
 ```
 abc123def456789012345678901234567890abcd
 ```
@@ -98,6 +103,7 @@ poetry run python -m src.main
 ```
 
 If configured correctly, you should see:
+
 1. Console output indicating Rollbar is initialized
 2. An info message (will be filtered)
 3. An exception being reported
@@ -117,27 +123,32 @@ After running the demo, check your Rollbar dashboard:
 The error detail page shows:
 
 **Overview Section:**
+
 - Error title and message
 - Stack trace with file names and line numbers
 - When the error occurred
 - How many times it occurred
 
 **Custom Data Section:**
+
 - `trace_id` - Unique identifier for this error
 - `feature_flags` - Array of enabled features
 - `foo_key` - Custom nested data
 - `base_model_custom` - Serialized Pydantic model
 
 **Person Section:**
+
 - User ID: `1234` (from the demo code)
 - Tenant: `tenant_name` (custom field)
 
 **Environment Section:**
+
 - Environment: Shows your configured environment (e.g., "local")
 - Code version: Your git commit hash or configured version
 - Platform: Python version and OS information
 
 **Framework:**
+
 - Shows "oreore_framework 1.0" (custom identifier from the demo)
 
 ### People Tab
@@ -159,21 +170,25 @@ This demonstrates how Rollbar tracks which users are experiencing errors.
 ### Key Dashboard Features
 
 **Items**
+
 - List of all unique errors in your project
 - Grouped by error type and message
 - Shows occurrence count and last seen time
 
 **People**
+
 - Users affected by errors
 - Requires `person` data in error payloads (covered in this tutorial)
 - Helps identify user-specific issues
 
 **Deployments**
+
 - Track which code versions introduced errors
 - Requires `code_version` configuration (auto-detected from git)
 - View error trends across deployments
 
 **Settings**
+
 - Project configuration
 - Access tokens
 - Integrations

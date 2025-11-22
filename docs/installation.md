@@ -65,47 +65,55 @@ poetry install
 This installs the following packages:
 
 **Runtime Dependencies:**
+
 - `rollbar` - Rollbar Python SDK for error monitoring
 - `pydantic` - Data validation and settings management
 - `pydantic-settings` - Environment variable loading with Pydantic
 - `python-dotenv` - Support for loading `.env` files
+- `msgspec` - High-performance serialization library
+- `pyyaml` - YAML configuration file support
 
 **Development Dependencies:**
+
 - `mypy` - Static type checker for Python
 - `ruff` - Fast Python linter and formatter
 
-### 4. Configure Environment Variables
+### 4. Configure Your Rollbar Token
 
-Create your local environment configuration file:
-
-```bash
-cp .env.example .env
-```
-
-Then edit the `.env` file to add your Rollbar access token and other settings. See the [Configuration Guide](configuration.md) for detailed information about all available environment variables.
-
-At minimum, you need to set:
+Create your local configuration file:
 
 ```bash
-ROLLBAR_ACCESS_TOKEN=your_rollbar_token_here
+cp settings.yaml.example settings.local.yaml
 ```
+
+Then edit `settings.local.yaml` to add your Rollbar access token:
+
+```yaml
+rollbar:
+  access_token: your_rollbar_token_here
+```
+
+See the [Configuration Guide](configuration.md) for detailed information about YAML configuration, environment-specific files, and the multi-source configuration system.
 
 For instructions on obtaining your Rollbar access token, see the [Rollbar Setup Guide](rollbar-setup.md).
 
 ## Verify Installation
 
-Test that everything is installed correctly:
+Test that everything is installed correctly by running the interactive demo:
 
 ```bash
 poetry run python -m src.main
 ```
 
 This will:
-1. Initialize Rollbar with your configuration
-2. Send an info message (filtered out by the payload handler)
-3. Trigger an exception that gets sent to Rollbar with enriched metadata
 
-Check your Rollbar dashboard to see the error report!
+1. Initialize Rollbar with your configuration
+2. Display an interactive menu with 8 demo scenarios
+3. Let you explore different Rollbar features
+
+Select any scenario to send demo data to Rollbar, then check your dashboard to see the results!
+
+See the [Scenarios Guide](scenarios-guide.md) for detailed information about each demo scenario.
 
 ## Next Steps
 
@@ -121,11 +129,13 @@ Check your Rollbar dashboard to see the error report!
 If Poetry is not found in your PATH after installation, you may need to add it manually. The installer will show you the path to add.
 
 On Windows, Poetry is typically installed to:
+
 ```
 %APPDATA%\Python\Scripts
 ```
 
 On macOS/Linux:
+
 ```
 $HOME/.local/bin
 ```

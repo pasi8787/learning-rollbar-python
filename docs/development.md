@@ -25,6 +25,7 @@ poetry run mypy src
 ```
 
 **Expected output (no errors):**
+
 ```
 Success: no issues found in 3 source files
 ```
@@ -41,48 +42,13 @@ warn_unused_ignores = true
 ```
 
 **What strict mode includes:**
+
 - `disallow_untyped_defs` - All functions must have type annotations
 - `disallow_any_unimported` - Prevents accidental use of `Any`
 - `disallow_any_expr` - Requires explicit types
 - `no_implicit_optional` - Explicit `Optional` required for `None` defaults
 - `warn_return_any` - Warns when returning `Any`
 - `warn_unused_ignores` - Catches unnecessary `type: ignore` comments
-
-### Common Type Errors and Solutions
-
-**Missing type annotations:**
-```python
-# ❌ Error: Function is missing a type annotation
-def process_data(value):
-    return value * 2
-
-# ✅ Fixed: Add type annotations
-def process_data(value: int) -> int:
-    return value * 2
-```
-
-**Implicit Optional:**
-```python
-# ❌ Error: Implicit optional is not allowed
-def get_user(user_id: str = None) -> User:
-    ...
-
-# ✅ Fixed: Explicit Optional
-from typing import Optional
-
-def get_user(user_id: Optional[str] = None) -> User:
-    ...
-```
-
-**Dict without types:**
-```python
-# ❌ Error: Need type annotation for 'data'
-data = {}
-
-# ✅ Fixed: Specify types
-data: dict[str, Any] = {}
-# Or use TypedDict for structured dicts
-```
 
 ### Integration with VS Code
 
@@ -114,6 +80,7 @@ poetry run ruff check src
 ```
 
 **Example output:**
+
 ```
 All checks passed!
 ```
@@ -133,6 +100,7 @@ poetry run ruff check --fix src
 ```
 
 This will automatically fix:
+
 - Unused imports
 - Import sorting
 - Unnecessary list/dict/set literals
@@ -152,6 +120,7 @@ select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "PL"]
 ```
 
 **Selected rule sets:**
+
 - `E` - pycodestyle errors (PEP 8 violations)
 - `F` - Pyflakes (undefined names, unused imports)
 - `I` - isort (import sorting)
@@ -165,6 +134,7 @@ select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "PL"]
 ### Common Linting Issues
 
 **Unused imports:**
+
 ```python
 # ❌ Error: Unused import
 import sys
@@ -179,6 +149,7 @@ def hello() -> str:
 ```
 
 **Import sorting:**
+
 ```python
 # ❌ Error: Imports not sorted
 from typing import Any
@@ -193,6 +164,7 @@ from rollbar import rollbar
 ```
 
 **Shadowing builtins:**
+
 ```python
 # ❌ Error: Shadowing built-in 'list'
 def process(list: list[int]) -> None:
@@ -416,11 +388,13 @@ For CI/CD pipelines (GitHub Actions, GitLab CI, etc.), add these checks:
 ### mypy issues
 
 **Module not found:**
+
 ```
 error: Cannot find implementation or library stub for module named 'rollbar'
 ```
 
 **Solution:** Install dependencies and ensure mypy can find them:
+
 ```bash
 poetry install
 poetry run mypy src
@@ -428,6 +402,7 @@ poetry run mypy src
 
 **Too many errors:**
 Start with specific files and work up:
+
 ```bash
 poetry run mypy src/main.py
 ```
@@ -435,6 +410,7 @@ poetry run mypy src/main.py
 ### Ruff issues
 
 **Ruff not found:**
+
 ```bash
 poetry install
 ```
@@ -448,6 +424,95 @@ Ensure you're running from the `app` directory where `pyproject.toml` exists.
 2. Type "Python: Select Interpreter"
 3. Choose the Poetry virtualenv (`.venv/bin/python`)
 
+## Working with YAML Configuration
+
+The project uses YAML configuration files (`settings.yaml`, `settings.local.yaml`). Here's how to work with them effectively:
+
+### YAML Validation
+
+Validate YAML syntax before running:
+
+**Using Python:**
+
+```bash
+poetry run python -c "import yaml; yaml.safe_load(open('settings.local.yaml'))"
+```
+
+**Using yamllint (if installed):**
+
+```bash
+yamllint settings.local.yaml
+```
+
+### Common YAML Issues
+
+**Indentation errors:**
+
+```yaml
+# ❌ Error: Inconsistent indentation
+rollbar:
+ access_token: abc123
+  code_version: v1.0
+
+# ✅ Fixed: Consistent 2-space indentation
+rollbar:
+  access_token: abc123
+  code_version: v1.0
+```
+
+**Type errors:**
+
+```yaml
+# ❌ Error: String needed but found number
+rollbar:
+  access_token: 12345
+
+# ✅ Fixed: Quoted string
+rollbar:
+  access_token: "12345"
+```
+
+### VS Code YAML Support
+
+Install the YAML extension for better editing:
+
+- **YAML** (`redhat.vscode-yaml`) - YAML language support with validation
+
+## Working with msgspec
+
+The project uses [msgspec](https://jcristharif.com/msgspec/) for efficient serialization. Here are some tips:
+
+### Defining Structured Data
+
+```python
+import msgspec
+
+class CustomData(msgspec.Struct):
+    user_id: str
+    action: str
+    timestamp: int
+
+# Serialize to dict
+data = CustomData(user_id="123", action="login", timestamp=1234567890)
+payload["data"]["custom"] = msgspec.to_builtins(data)
+```
+
+### Type Checking with msgspec
+
+mypy understands msgspec.Struct types:
+
+```python
+data = CustomData(user_id="123", action="login", timestamp="invalid")
+# mypy error: Argument "timestamp" has incompatible type "str"; expected "int"
+```
+
+### Benefits of msgspec
+
+- **10-80x faster** than Pydantic for serialization
+- **Type-safe** with full mypy support
+- **Zero-copy** operations where possible
+- **Compact** - Smaller memory footprint
+
 ## Best Practices
 
 1. **Always use type annotations** - Helps catch bugs early
@@ -455,6 +520,8 @@ Ensure you're running from the `app` directory where `pyproject.toml` exists.
 3. **Fix warnings promptly** - Don't let technical debt accumulate
 4. **Use auto-formatting** - Let tools handle style, focus on logic
 5. **Enable editor integration** - Get instant feedback while coding
+6. **Validate YAML files** - Check syntax before running the application
+7. **Use msgspec for performance** - Prefer msgspec.Struct over dict for structured data
 
 ## Next Steps
 

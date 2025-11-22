@@ -1,4 +1,17 @@
+# Rollbar Python Integration - Default Configuration
+#
+# Copy this file to create your local configuration:
+#   cp settings.yaml.example settings.local.yaml
+#
+# Then edit settings.local.yaml with your actual Rollbar access token.
+
 rollbar:
+  # [REQUIRED] Your Rollbar project access token
+  # Get this from: https://rollbar.com/settings/access_tokens/
+  # Use a token with 'post_client_item' or 'post_server_item' scope
   access_token:
-  # [OPTIONAL] code_version will use git command to get latest commit hash if not specified
-  # code_version:
+
+  # [OPTIONAL] Version identifier for error tracking
+  # If not specified, will auto-detect from git commit hash
+  # Useful for tracking which deployment introduced errors
+  # code_version: v1.2.3
