@@ -41,8 +41,21 @@ def _payload_handler(payload: dict, **_kw: object) -> dict | bool:
     level = payload["data"]["level"]
     print(f"Processing {level} level event")
 
+    # Framework
     payload["data"]["framework"] = "oreore_framework 1.0"
 
+    # Server
+    # Need to add "server.root" to link stack trace to GitHub correctly
+    server = payload["data"].get("server", {})
+    root_path = (
+        app_environment.root_path.parent
+        if app_environment.name == "local"
+        else app_environment.root_path
+    )
+    server["root"] = str(root_path)
+    payload["data"]["server"] = server
+
+    # Custom model
     payload["data"]["base_model_custom"] = msgspec.to_builtins(
         {
             "the_model": CustomMetadata(
